@@ -15,40 +15,50 @@ const howdyPrompt = {
     message: 'Howdy!!!',
     default: 'Howdy y\'all!'
 };
+const proceedPrompt = {
+    name: 'proceed',
+    type: 'confirm',
+    message: 'Anything else I can help you with?',
+};
+const ACTIONS = [
+    'Tell me what date it is.',
+    'Process images for me.',
+    'Quit program'
+];
 const actionPrompt = {
     name: 'action',
     type: 'list',
     message: 'What can I do for you?',
-    choices: [
-        'Tell me what date it is.',
-        'Process images for me.',
-        'Quit program'
-    ]
+    choices: ACTIONS
 };
+const IMAGEACTIONS = [
+    'Resize',
+    'Compress',
+    'Show information',
+    'Exit to Main Menu'
+];
 const imageActionsPrompt = {
     name: 'imageActions',
     type: 'checkbox',
     message: 'What would you like to do with the images?',
-    choices: [
-        'Compress',
-        'Resize',
-        'Show information',
-        'Exit to Main Menu'
-    ]
+    choices: IMAGEACTIONS
 };
 function runImages() {
     return __awaiter(this, void 0, void 0, function* () {
         const imageActionsResponse = yield inquirer.prompt(imageActionsPrompt);
         USER_RESPONSES.imageActions = imageActionsResponse.imageActions;
         console.log(USER_RESPONSES.imageActions);
-        if (USER_RESPONSES.imageActions.includes('Resize')) {
+        if (USER_RESPONSES.imageActions.includes(IMAGEACTIONS[0])) {
             console.log('leeet\'s reeesize!');
         }
-        if (USER_RESPONSES.imageActions.includes('Compress')) {
+        if (USER_RESPONSES.imageActions.includes(IMAGEACTIONS[1])) {
             console.log('leeet\'s compress');
         }
-        if (USER_RESPONSES.imageActions.includes('Show information')) {
+        if (USER_RESPONSES.imageActions.includes(IMAGEACTIONS[2])) {
             console.log('show info.');
+        }
+        if (USER_RESPONSES.imageActions.includes(IMAGEACTIONS[3])) {
+            console.log('Goodbye images!');
         }
     });
 }
@@ -59,15 +69,15 @@ function run(initial = false) {
         USER_RESPONSES.howdy = howdyReponse.howdy;
         USER_RESPONSES.action = actionResponse.action;
         switch (USER_RESPONSES.action) {
-            case 'Tell me what date it is.':
+            case ACTIONS[0]:
                 const currentDate = new Date().toLocaleDateString('pl-PL');
                 console.info("The date today is: ", currentDate);
                 break;
-            case 'Process images for me.':
+            case ACTIONS[1]:
                 console.info('images');
                 yield runImages();
                 break;
-            case 'We\'re done here, let me go':
+            case ACTIONS[2]:
                 console.info('So long, my friend!');
                 process.exit(0);
                 break;
@@ -75,7 +85,17 @@ function run(initial = false) {
                 process.exit(0);
                 break;
         }
-        run();
+        (function shouldProceed() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const proceedResponse = yield inquirer.prompt(proceedPrompt);
+                if (proceedResponse.proceed) {
+                    run();
+                }
+                else {
+                    console.info('So long, my friend!');
+                }
+            });
+        })();
     });
 }
 ;
